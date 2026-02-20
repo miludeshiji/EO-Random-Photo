@@ -20,10 +20,10 @@
     "/images/vertical/v_018.webp",
     "/images/vertical/v_019.webp",
     "/images/vertical/v_020.webp",
-    "/images/vertical/v_021.webp.tmp.webp",
-    "/images/vertical/wallhaven-8g79l1.jpg",
-    "/images/vertical/wallhaven-lyypwr.jpg",
-    "/images/vertical/wallhaven-mlz2q8.jpg"
+    "/images/vertical/v_021.webp",
+    "/images/vertical/v_022.webp",
+    "/images/vertical/v_023.webp",
+    "/images/vertical/v_024.webp"
   ],
   "horizontal": [
     "/images/horizontal/h_001.webp",
@@ -62,17 +62,19 @@
     "/images/horizontal/h_034.webp",
     "/images/horizontal/h_035.webp",
     "/images/horizontal/h_036.webp",
-    "/images/horizontal/wallhaven-2yr9gy.png",
-    "/images/horizontal/wallhaven-3q3wj3.jpg",
-    "/images/horizontal/wallhaven-5yw9x9.png",
-    "/images/horizontal/wallhaven-6lkox6.jpg",
-    "/images/horizontal/wallhaven-8geev2.jpg",
-    "/images/horizontal/wallhaven-exdqyr.jpg",
-    "/images/horizontal/wallhaven-lyz1yr.png",
-    "/images/horizontal/wallhaven-m3x3w9.jpg",
-    "/images/horizontal/wallhaven-mld9jk.jpg",
-    "/images/horizontal/wallhaven-qrjjyd.png",
-    "/images/horizontal/wallhaven-yq52yk.jpg",
-    "/images/horizontal/wallhaven-zpzpyv.png"
+    "/images/horizontal/h_037.webp",
+    "/images/horizontal/h_038.webp",
+    "/images/horizontal/h_039.webp",
+    "/images/horizontal/h_040.webp",
+    "/images/horizontal/h_041.webp",
+    "/images/horizontal/h_042.webp",
+    "/images/horizontal/h_043.webp",
+    "/images/horizontal/h_044.webp",
+    "/images/horizontal/h_045.webp",
+    "/images/horizontal/h_046.webp",
+    "/images/horizontal/h_047.webp",
+    "/images/horizontal/h_048.webp",
+    "/images/horizontal/h_049.webp",
+    "/images/horizontal/h_050.webp"
   ]
 }
