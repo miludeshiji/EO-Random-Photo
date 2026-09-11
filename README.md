@@ -2,111 +2,112 @@
 
 [![Deploy to EdgeOne Pages](https://img.shields.io/badge/Deploy%20to-EdgeOne%20Pages-blue?style=for-the-badge&logo=tencent-cloud)](https://edgeone.ai/)
 
-[简体中文](./README_ZH.md) | [English](./README.md)
+[简体中文](./README.md) | [English](./README_EN.md)
 
-A high-performance, secure, and customizable Random Photo API built on **Tencent Cloud EdgeOne Pages**.
+一个基于 **腾讯云 EdgeOne Pages** 构建的高性能、安全、可定制的随机图片 API。
 
-✨ **Key Features**:
-*   **🚀 Edge Computing**: Powered by Edge Functions for millisecond-level response times.
-*   **⚡ Zero-Overhead Config**: Implementation of **Global Variable Caching** (for Env mode) and **Context Sharing**, ensuring configuration is parsed only once per isolate/request.
-*   **📱 Adaptive Design**: Automatically serves vertical or horizontal wallpapers based on the user's device.
-*   **🔒 Smart Hotlink Protection**:
-    *   **Global Protection**: Protects both the API and static image resources.
-    *   **Whitelist**: Only authorized domains can access your resources.
-    *   **Public Images**: Designate specific images as "Public" for universal access.
-*   **🖼️ High-Fidelity Compression**: Built-in FFmpeg script for generating ultra-low size, high-quality WebP images (`-q 75 -m 6`).
-*   **🛡️ DDoS Defense Mode**: Enables micro-caching on CDN nodes to withstand high-concurrency attacks (10k+ QPS).
-*   **⚙️ Hybrid Configuration**:
-    *   **KV Mode**: Real-time configuration updates via a visual admin panel.
-    *   **Env Mode**: Read-only configuration via Environment Variables (for users without KV).
-*   **🎨 Aurora Admin Panel**: Built with Aurora UI + Glassmorphism design language, featuring **CN/EN i18n** support.
+✨ **核心特性**：
+*   **🚀 边缘计算**：基于 Edge Functions，毫秒级响应。
+*   **⚡ 零开销配置**：实现 **全局变量缓存** (Env 模式) 与 **Context 共享**，确保每个实例/请求仅解析一次配置，极致压榨边缘性能。
+*   **📱 自适应设备**：自动根据访问设备（手机/电脑）返回横屏或竖屏壁纸。
+*   **🔒 智能防盗链**：
+    *   **全局拦截**：不仅保护 API，也保护图片静态资源。
+    *   **白名单机制**：仅允许授权域名调用。
+    *   **特定公开**：支持将特定图片设为"公开"，由任何站点引用。
+*   **🖼️ 高保真压缩**：内置 FFmpeg 脚本支持生成超低体积、高画质的 WebP 图片 (`-q 75 -m 6`)。
+*   **🛡️ DDoS 防御模式**：开启后启用 CDN 微缓存，单节点抗击万级 QPS 攻击。
+*   **⚙️ 双模配置**：
+    *   **KV 模式**：通过管理面板**实时热更新**配置。
+    *   **Env 模式**：通过环境变量配置（只读，适合无 KV 用户）。
+*   **� Aurora 管理面板**：采用 Aurora UI + Glassmorphism 设计语言，支持 **中/英文切换**，自动保存语言偏好。
 
 ---
 
-## 🛠️ Quick Deployment
+## 🛠️ 快速部署
 
-### 1. Prepare Images
-Upload your wallpapers to the repository:
-*   Vertical images: `public/images/vertical/`
-*   Horizontal images: `public/images/horizontal/`
+### 1. 准备图片
+将您的壁纸上传到仓库：
+*   竖屏图片：`public/images/vertical/`
+*   横屏图片：`public/images/horizontal/`
 
-### 2. Optimize & Generate Manifest
-Before committing, run the scripts to optimize images and generate the index:
+### 2. 优化图片与生成清单
+提交代码前，运行脚本优化图片并生成索引：
 ```bash
-# 1. Optimize images (High quality WebP, significantly reduces size)
+# 1. 深度优化图片体积 (高画质 WebP)
 node scripts/optimize-images.js
 
-# 2. Update the image manifest
+# 2. 更新图片清单
 npm run generate:manifest
 ```
-> **Note**: Ensure `functions/data/manifest.json` is included in your Git commit.
+> Git 提交注意事项：请确保将生成的 `functions/data/manifest.json` 一并提交。
 
-### 3. Deploy to EdgeOne Pages
-1.  Go to [EdgeOne Pages Console](https://console.cloud.tencent.com/edgeone/pages).
-2.  Create a new project and connect your Git repository.
-3.  **Build Settings**:
-    *   Build Command: `npm run generate:manifest` (or `npm run build`)
+### 3. EdgeOne Pages 部署
+1.  进入 [EdgeOne Pages 控制台](https://console.cloud.tencent.com/edgeone/pages)。
+2.  新建项目，连接 Git 仓库。
+3.  **构建设置**：
+    *   Build Command: `npm run generate:manifest` (或 `npm run build`)
     *   Output Directory: `public`
-4.  Click **Deploy**.
+4.  点击部署。
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ 配置说明
 
-You can configure the project using **Environment Variables** (ReadOnly) or **KV Storage** (Read/Write). KV is preferred. If KV is missing, it falls back to Env Vars.
+您可以通过 **环境变量 (推荐新手)** 或 **KV 存储 (推荐进阶)** 进行配置。优先读取 KV，若未配置则读取环境变量。
 
-### Method A: Environment Variables (Read-Only)
-Add these variables in EdgeOne Pages settings:
+### 方法 A: 环境变量 (只读模式)
+在 EdgeOne Pages 项目设置中添加以下变量：
 
-| Variable | Type | Example | Description |
+| 变量名 | 类型 | 示例值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `ADMIN_PASSWORD` | String | `mypassword` | **[Required]** Admin panel password |
-| `EO_PUBLIC_ACCESS` | Boolean | `false` | Allow global public access (Default: false) |
-| `EO_WHITELIST` | String | `example.com,blog.me` | Allowed domains (comma separated) |
-| `EO_DDOS_MODE` | Boolean | `false` | Enable DDoS Defense Mode |
-| `EO_CACHE_TIMEOUT` | Number | `5` | Cache duration in seconds for DDoS Mode |
-| `EO_PUBLIC_IMAGES` | String | `banner.jpg,logo.png` | **Public Images List**. These files bypass hotlink protection. |
+| `ADMIN_PASSWORD` | String | `mypassword` | **[必填]** 管理后台登录密码 |
+| `EO_PUBLIC_ACCESS` | Boolean | `false` | 是否允许全站公开（建议关闭） |
+| `EO_WHITELIST` | String | `example.com,blog.me` | 防盗链白名单（逗号分隔） |
+| `EO_DDOS_MODE` | Boolean | `false` | 是否开启 DDoS 防御模式 |
+| `EO_CACHE_TIMEOUT` | Number | `5` | DDoS 模式下的缓存时间（秒） |
+| `EO_PUBLIC_IMAGES` | String | `banner.jpg,logo.png` | **公开图片列表**，这些图片允许任何域名引用 |
 
-### Method B: KV Storage (Read/Write)
-1.  Create a KV Namespace (any name, e.g., `Random`) in the console.
-2.  Bind it to `EO_KV` in Pages Settings -> **Functions Binding**.
-3.  **First-time setup**: Access `https://your-domain/admin/` and login with `ADMIN_PASSWORD` from Env Vars.
-4.  Save any configuration to activate KV mode.
+### 方法 B: KV 存储 (读写可控模式)
+1.  在控制台创建 KV 命名空间（名称任意，如 `Random`）。
+2.  在 Pages 设置 -> **函数绑定** 中，将变量名 `EO_KV` 绑定到该命名空间。
+3.  **首次初始化**：访问管理后台 `https://您的域名/admin/`，使用环境变量 `ADMIN_PASSWORD` 登录。
+4.  在后台保存任意配置后，KV 即自动生效。
 
-> **🔐 Hybrid Password**: The `ADMIN_PASSWORD` environment variable serves as a **permanent fallback**. Even if you set a new password in KV, the original Env password still works. This ensures account recovery.
+> **🔐 混合密码机制**：环境变量 `ADMIN_PASSWORD` 作为**永久兜底密码**，即使 KV 中配置了新密码，原密码仍可登录。这确保您在忘记 KV 密码时仍能恢复访问。
 
 ---
 
-## 🔌 API Usage
+## 🔌 API 使用指南
 
-### 1. Get Random Image
+### 1. 获取随机图片
 **Endpoint**: `/random`
 
-| Param | Description |
+| 参数 | 说明 |
 | :--- | :--- |
-| `type` | (Optional) `h`=Horizontal, `v`=Vertical. Auto-detects if omitted. |
-| `redirect` | (Optional) `true`=Returns 302 Redirect; Omitted or `false`=Returns Image Content directly (Proxy Mode). |
+| `type` | (可选) `h`=横屏, `v`=竖屏。不传则根据 User-Agent 自动判断。 |
+| `redirect` | (可选) `true`=返回 302 重定向到图片地址；不传或 `false`=直接返回图片内容 (Proxy 模式)。 |
 
+**示例**：
 ```html
-<!-- Direct Image Return (Recommended, URL stays /random) -->
+<!-- 直接返回图片内容 (推荐，浏览器地址栏不改变) -->
 <img src="https://api.your-site.com/random" />
 <img src="https://api.your-site.com/random?type=v" />
 
-<!-- 302 Redirect to actual path (Legacy behavior) -->
+<!-- 302 重定向到实际地址 (旧版行为) -->
 <img src="https://api.your-site.com/random?redirect=true" />
 ```
 
-### 2. Health Check (for UptimeKuma)
+### 2. 健康检查端点 (用于 UptimeKuma 监控)
 **Endpoint**: `/health`
 
-Returns service health status with actual validation of image availability.
+返回服务健康状态，实际验证图片可用性，使用 HEAD 请求不消耗流量。
 
-| Status Code | Meaning |
+| 状态码 | 含义 |
 | :--- | :--- |
-| `200` | All checks passed |
-| `503` | Service unhealthy |
+| `200` | 所有检查通过，服务正常 |
+| `503` | 服务异常 |
 
-**Response Example**:
+**响应示例**：
 ```json
 {
   "status": "ok",
@@ -120,53 +121,53 @@ Returns service health status with actual validation of image availability.
 }
 ```
 
-**UptimeKuma Configuration**:
-- **Monitor Type**: HTTP(s)
-- **URL**: `https://your-domain/health`
-- **Expected Status**: `200`
-- **Keyword**: `"status":"ok"`
+**UptimeKuma 配置**：
+- **监控类型**：HTTP(s)
+- **URL**：`https://您的域名/health`
+- **预期状态码**：`200`
+- **关键词**：`"status":"ok"`
 
-### 3. Access Specific Public Image
-If `banner.jpg` is in your `EO_PUBLIC_IMAGES` whitelist:
+### 3. 引用特定图片 (公开图片)
+如果您在配置中将 `banner.jpg` 加入了 `EO_PUBLIC_IMAGES` 白名单，则可以直连：
 
 ```html
 <img src="https://api.your-site.com/images/horizontal/banner.jpg" />
 ```
-*Note: Images not in the whitelist will return 403 Forbidden if accessed directly from an unauthorized domain.*
+*注意：未加入白名单的图片，直接访问会被 403 拦截。*
 
 ---
 
-## 🛡️ Security Policies
+## 🛡️ 安全策略详解
 
-### Hotlink Protection
-Intercepts requests from non-whitelisted domains.
-*   **Exception 1**: `EO_PUBLIC_ACCESS=true` (Global Public).
-*   **Exception 2**: The requested file is in `EO_PUBLIC_IMAGES`.
+### 防盗链 (Referer Check)
+系统会拦截所有非白名单域名的请求。
+*   例外 1：配置了 `EO_PUBLIC_ACCESS=true` (全站公开)。
+*   例外 2：请求的图片在 `EO_PUBLIC_IMAGES` 列表中。
 
-### DDoS Defense Mode
-When enabled:
-1.  **Micro-Caching**: API responses include `s-maxage=5`, causing the CDN to cache the redirect. All users see the same image for 5 seconds, reducing origin load.
-2.  **Strict Check**: Requests must have a valid Referer (unless it is a Public Image request).
+### DDoS 防御模式
+开启后：
+1.  **强制缓存**：API 响应包含 `s-maxage=5`，CDN 节点直接缓存跳转结果。这意味着 5 秒内所有用户会看到同一张图片，但能极大降低源站负载。
+2.  **严格检查**：强制要求请求携带 Referer（除非是公开图片），拦截脚本攻击。
 
 ---
 
-## 📂 Project Structure
+## 📂 项目结构
 ```
 ├── functions/
-│   ├── _middleware.ts    # Global Access Control & CORS
-│   ├── random.ts         # Random Image Logic
-│   ├── health.ts         # Health Check Endpoint
-│   ├── env.d.ts          # TypeScript Type Definitions
+│   ├── _middleware.ts    # 全局权限控制 (防盗链/CORS)
+│   ├── random.ts         # 随机图片逻辑
+│   ├── health.ts         # 健康检查端点
+│   ├── env.d.ts          # TypeScript 类型定义
 │   ├── api/
-│   │   └── admin.ts      # Admin API
+│   │   └── admin.ts      # 管理后台 API
 │   ├── data/
-│   │   └── manifest.json # Image Index (auto-generated)
+│   │   └── manifest.json # 图片索引 (自动生成)
 │   └── utils/
-│       └── config.ts     # Config Loader (KV/Env)
+│       └── config.ts     # 双模配置读取器 (KV/Env)
 ├── public/
-│   ├── admin/            # Aurora UI Admin Dashboard
-│   └── images/           # Image Assets
-├── scripts/              # Build Scripts
+│   ├── admin/            # Aurora UI 管理后台
+│   └── images/           # 图片仓库
+├── scripts/              # 构建脚本
 └── package.json
 ```
 
